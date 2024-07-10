@@ -2,7 +2,6 @@ package logistics1
 
 import (
 	"fmt"
-	"github.com/advanced-go/operations/activity1"
 	"github.com/advanced-go/opsagents/guidance"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
@@ -92,7 +91,7 @@ func (l *logistics) Run() {
 	}
 	l.running = true
 
-	go run(l, activity1.Log, queryAssignments, newCaseOfficer)
+	go run(l, activityLog, newCaseOfficer, newLandscape())
 }
 
 func (l *logistics) startTicker(interval time.Duration) {

@@ -1,7 +1,6 @@
 package logistics1
 
 import (
-	"context"
 	"fmt"
 	"github.com/advanced-go/stdlib/core"
 	fmt2 "github.com/advanced-go/stdlib/fmt"
@@ -22,7 +21,7 @@ func (t *testAgent) Handle(status *core.Status, _ string) *core.Status {
 func (t *testAgent) Run()      {}
 func (t *testAgent) Shutdown() {}
 
-func testLog(_ context.Context, agentId string, content any) *core.Status {
+func testLog(agentId string, content any) *core.Status {
 	fmt.Printf("test: activity1.Log() -> %v : %v : %v\n", fmt2.FmtRFC3339Millis(time.Now().UTC()), agentId, content)
 	return core.StatusOK()
 }
