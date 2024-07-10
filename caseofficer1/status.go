@@ -23,7 +23,7 @@ func runStatus(c *caseOfficer, log logFunc, insert insertFunc) {
 			log(nil, c.uri, "processing status message")
 			status := insert(msg)
 			if !status.OK() && !status.NotFound() {
-				c.handler.Message(messaging.NewStatusMessage(c.handler.Uri(), c.uri, status))
+				c.opsAgent.Handle(status, c.uri)
 			}
 		case msg1, open1 := <-c.statusCtrlC:
 			if !open1 {

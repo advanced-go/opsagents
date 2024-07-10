@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/advanced-go/operations/activity1"
 	"github.com/advanced-go/opsagents/guidance"
+	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"time"
 )
@@ -29,7 +30,7 @@ func AgentUri(region string) string {
 }
 
 // NewAgent - create a new logistics agent, region needs to be set via host environment
-func NewAgent(region string) messaging.Agent {
+func NewAgent(region string) messaging.OpsAgent {
 	return newAgent(region)
 }
 
@@ -60,6 +61,14 @@ func (l *logistics) Message(m *messaging.Message) {
 	messaging.Mux(m, l.ctrlC, nil, nil)
 }
 
+// Handle - error handler
+func (c *logistics) Handle(status *core.Status, requestId string) *core.Status {
+	// TODO : how to handle an error
+	fmt.Printf("test: opsAgent.Handle() -> [status:%v]\n", status)
+	status.Handled = true
+	return status
+}
+
 // Shutdown - shutdown the agent
 func (l *logistics) Shutdown() {
 	if !l.running {
@@ -86,7 +95,7 @@ func (l *logistics) Run() {
 	go run(l, activity1.Log, queryAssignments, newCaseOfficer)
 }
 
-func (l *logistics) StartTicker(interval time.Duration) {
+func (l *logistics) startTicker(interval time.Duration) {
 	if interval <= 0 {
 		interval = l.interval
 	} else {
@@ -98,6 +107,6 @@ func (l *logistics) StartTicker(interval time.Duration) {
 	l.ticker = time.NewTicker(interval)
 }
 
-func (l *logistics) StopTicker() {
+func (l *logistics) stopTicker() {
 	l.ticker.Stop()
 }

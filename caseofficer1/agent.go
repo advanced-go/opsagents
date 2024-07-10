@@ -23,7 +23,7 @@ type caseOfficer struct {
 	ctrlC       chan *messaging.Message
 	statusCtrlC chan *messaging.Message
 	statusC     chan *messaging.Message
-	handler     messaging.Agent
+	opsAgent    messaging.OpsAgent
 	controllers *messaging.Exchange
 	shutdown    func()
 }
@@ -36,12 +36,12 @@ func AgentUri(traffic string, origin core.Origin) string {
 }
 
 // NewAgent - create a new case officer agent
-func NewAgent(interval time.Duration, traffic string, origin core.Origin, handler messaging.Agent) messaging.Agent {
-	return newAgent(interval, traffic, origin, handler)
+func NewAgent(interval time.Duration, traffic string, origin core.Origin, opsAgent messaging.OpsAgent) messaging.OpsAgent {
+	return newAgent(interval, traffic, origin, opsAgent)
 }
 
 // newCAgent - create a new case officer agent
-func newAgent(interval time.Duration, traffic string, origin core.Origin, handler messaging.Agent) *caseOfficer {
+func newAgent(interval time.Duration, traffic string, origin core.Origin, opsAgent messaging.OpsAgent) *caseOfficer {
 	c := new(caseOfficer)
 	c.uri = AgentUri(traffic, origin)
 	c.traffic = traffic
@@ -51,7 +51,7 @@ func newAgent(interval time.Duration, traffic string, origin core.Origin, handle
 	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.statusCtrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.statusC = make(chan *messaging.Message, 3*messaging.ChannelSize)
-	c.handler = handler
+	c.opsAgent = opsAgent
 	c.controllers = messaging.NewExchange()
 	return c
 }
@@ -71,10 +71,10 @@ func (c *caseOfficer) Message(m *messaging.Message) {
 	messaging.Mux(m, c.ctrlC, nil, c.statusC)
 }
 
-// Add - add a shutdown function
-//func (c *caseOfficer) Add(f func()) {
-//	c.shutdown = messaging.AddShutdown(c.shutdown, f)
-//}
+// Handle - error handler
+func (c *caseOfficer) Handle(status *core.Status, requestId string) *core.Status {
+	return c.opsAgent.Handle(status, requestId)
+}
 
 // Shutdown - shutdown the agent
 func (c *caseOfficer) Shutdown() {
@@ -105,7 +105,7 @@ func (c *caseOfficer) Run() {
 	go run(c, activity1.Log, assignment1.Update, newControllerAgent)
 }
 
-func (c *caseOfficer) StartTicker(interval time.Duration) {
+func (c *caseOfficer) startTicker(interval time.Duration) {
 	if interval <= 0 {
 		interval = c.interval
 	} else {
@@ -117,6 +117,6 @@ func (c *caseOfficer) StartTicker(interval time.Duration) {
 	c.ticker = time.NewTicker(interval)
 }
 
-func (c *caseOfficer) StopTicker() {
+func (c *caseOfficer) stopTicker() {
 	c.ticker.Stop()
 }

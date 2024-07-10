@@ -22,10 +22,9 @@ func run(l *logistics, log logFunc, query queryFunc, agent agentFunc) {
 	status := processAssignments(l, query, agent)
 	log(nil, l.uri, "process assignments : init")
 	if !status.OK() && !status.NotFound() {
-		log(nil, l.uri, status.Err)
-		// TODO : how to handle log error
+		l.Handle(status, "")
 	}
-	l.StartTicker(0)
+	l.startTicker(0)
 	for {
 		select {
 		case <-l.ticker.C:
@@ -38,7 +37,7 @@ func run(l *logistics, log logFunc, query queryFunc, agent agentFunc) {
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				close(l.ctrlC)
-				l.StopTicker()
+				l.stopTicker()
 				log(nil, l.uri, messaging.ShutdownEvent)
 				return
 			default:

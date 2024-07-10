@@ -98,9 +98,9 @@ func ExampleRun_Error() {
 	time.Sleep(time.Second * 3)
 
 	//Output:
-	//test: activity1.Log() -> 2024-07-08T17:02:46.989Z : case-officer1:ingress.us-central1.c : process assignments : default
-	//test: activity1.Log() -> 2024-07-08T17:02:48.993Z : case-officer1:ingress.us-central1.c : process assignments : onTick()
-	//test: testAgent.Message() -> [chan:STATUS] [from:case-officer1:ingress.us-central1.c] [to:testAgent] [event:status] [status:Invalid Argument [error: controller2.Register() agent already exists: [ingress-controller1:us-central1.c.www.host1.com]]]
+	//test: activity1.Log() -> 2024-07-08T17:02:46.989Z : case-officer1:ingress.us-central1.c : process assignments : init
+	//test: activity1.Log() -> 2024-07-08T17:02:48.993Z : case-officer1:ingress.us-central1.c : process assignments : tick
+	//test: opsAgent.Handle() -> [status:Invalid Argument [error: exchange.Register() agent already exists: [ingress-controller1:us-central1.c.www.host1.com]]]
 	//test: activity1.Log() -> 2024-07-08T17:02:49.990Z : case-officer1:ingress.us-central1.c : event:shutdown
 
 }
