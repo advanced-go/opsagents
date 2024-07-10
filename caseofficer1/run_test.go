@@ -2,7 +2,6 @@ package caseofficer1
 
 import (
 	"fmt"
-	"github.com/advanced-go/operations/assignment1"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
@@ -41,7 +40,7 @@ func ExampleProcessAssignments() {
 	c := newAgent(time.Second*5, access.IngressTraffic, origin, nil)
 	fmt.Printf("test: newAgent() -> [status:%v]\n", c != nil)
 
-	status := processAssignments(c, assignment1.Update, newControllerAgent)
+	status := processAssignments(c, newControllerAgent, newAssignment())
 	fmt.Printf("test: processAssignments() -> [status:%v] [controllers:%v]\n", status, c.controllers.Count())
 
 	//Output:
@@ -61,7 +60,7 @@ func ExampleRun() {
 	msg := messaging.NewControlMessage("to", "from", messaging.ShutdownEvent)
 
 	c := newAgent(time.Second*50, access.IngressTraffic, origin, newTestAgent())
-	go run(c, testLog, assignment1.Update, newControllerAgent)
+	go run(c, testLog, newControllerAgent, newAssignment())
 	time.Sleep(time.Second * 2)
 
 	c.ctrlC <- msg
@@ -91,7 +90,7 @@ func ExampleRun_Error() {
 	msg := messaging.NewControlMessage("to", "from", messaging.ShutdownEvent)
 
 	c := newAgent(time.Second*2, access.IngressTraffic, origin, newTestAgent())
-	go run(c, testLog, assignment1.Update, newControllerAgent)
+	go run(c, testLog, newControllerAgent, newAssignment())
 	time.Sleep(time.Second * 3)
 
 	c.ctrlC <- msg

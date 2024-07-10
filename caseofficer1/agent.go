@@ -2,8 +2,6 @@ package caseofficer1
 
 import (
 	"fmt"
-	"github.com/advanced-go/operations/activity1"
-	"github.com/advanced-go/operations/assignment1"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"time"
@@ -101,8 +99,8 @@ func (c *caseOfficer) Run() {
 		return
 	}
 	c.running = true
-	go runStatus(c, activity1.Log, insertAssignmentStatus)
-	go run(c, activity1.Log, assignment1.Update, newControllerAgent)
+	go runStatus(c, activityLog, newAssignment())
+	go run(c, activityLog, newControllerAgent, newAssignment())
 }
 
 func (c *caseOfficer) startTicker(interval time.Duration) {

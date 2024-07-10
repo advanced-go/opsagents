@@ -2,24 +2,12 @@ package caseofficer1
 
 import (
 	"errors"
-	"fmt"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"net/http"
 	"time"
 )
-
-func ExampleInsertAssignmentStatus() {
-	msg := messaging.NewMessageWithStatus(messaging.ChannelStatus, "to", "from", "", core.StatusOK())
-	status := insertAssignmentStatus(msg)
-
-	fmt.Printf("test: insertAssignmentStatus() -> [status:%v]\n", status)
-
-	//Output:
-	//test: insertAssignmentStatus() -> [status:OK]
-
-}
 
 func ExampleRunStatus() {
 	origin := core.Origin{
@@ -33,7 +21,7 @@ func ExampleRunStatus() {
 	//fmt.Printf("test: NewMessage() -> %v\n", msg.Event())
 
 	c := newAgent(time.Second*1, access.IngressTraffic, origin, newTestAgent())
-	go runStatus(c, testLog, insertAssignmentStatus)
+	go runStatus(c, testLog, newAssignment())
 
 	status := core.NewStatusError(http.StatusTeapot, errors.New("teapot error"))
 	c.statusC <- messaging.NewMessageWithStatus(messaging.ChannelStatus, "to", "from", "event:status", status)
@@ -59,9 +47,9 @@ func ExampleRunStatus_Error() {
 	msg := messaging.NewControlMessage("to", "from", messaging.ShutdownEvent)
 
 	c := newAgent(time.Second*1, access.IngressTraffic, origin, newTestAgent())
-	go runStatus(c, testLog, func(m *messaging.Message) *core.Status {
+	go runStatus(c, testLog, &assignment{addStatus: func(m *messaging.Message) *core.Status {
 		return core.NewStatusError(http.StatusGatewayTimeout, errors.New("context deadline exceeded"))
-	})
+	}})
 
 	status := core.NewStatusError(http.StatusTeapot, errors.New("teapot error"))
 	c.statusC <- messaging.NewMessageWithStatus(messaging.ChannelStatus, "to", "from", "event:status", status)

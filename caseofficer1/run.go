@@ -1,26 +1,23 @@
 package caseofficer1
 
 import (
-	"context"
 	"github.com/advanced-go/agency/egress1"
 	"github.com/advanced-go/agency/ingress1"
-	"github.com/advanced-go/operations/assignment1"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 )
 
-type logFunc func(ctx context.Context, agentId string, content any) *core.Status
-type updateFunc func(ctx context.Context, agentId string, origin core.Origin) ([]assignment1.Entry, *core.Status)
+type logFunc func(agentId string, content any) *core.Status
 type agentFunc func(traffic string, origin core.Origin, opsAgent messaging.OpsAgent) messaging.Agent
 
 // run - case officer
-func run(c *caseOfficer, log logFunc, update updateFunc, agent agentFunc) {
-	if c == nil {
+func run(c *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
+	if c == nil || log == nil || agent == nil || assign == nil {
 		return
 	}
-	status := processAssignments(c, update, agent)
-	log(nil, c.uri, "process assignments : init")
+	status := processAssignments(c, agent, assign)
+	log(c.uri, "process assignments : init")
 	if !status.OK() && !status.NotFound() {
 		c.opsAgent.Handle(status, c.uri)
 	}
@@ -28,8 +25,8 @@ func run(c *caseOfficer, log logFunc, update updateFunc, agent agentFunc) {
 	for {
 		select {
 		case <-c.ticker.C:
-			status = processAssignments(c, update, agent)
-			log(nil, c.uri, "process assignments : tick")
+			status = processAssignments(c, agent, assign)
+			log(c.uri, "process assignments : tick")
 			if !status.OK() && !status.NotFound() {
 				c.opsAgent.Handle(status, c.uri)
 			}
@@ -41,7 +38,7 @@ func run(c *caseOfficer, log logFunc, update updateFunc, agent agentFunc) {
 			case messaging.ShutdownEvent:
 				close(c.ctrlC)
 				c.stopTicker()
-				log(nil, c.uri, messaging.ShutdownEvent)
+				log(c.uri, messaging.ShutdownEvent)
 				return
 			default:
 			}
@@ -57,8 +54,8 @@ func newControllerAgent(traffic string, origin core.Origin, opsAgent messaging.O
 	return egress1.NewControllerAgent(origin, opsAgent)
 }
 
-func processAssignments(c *caseOfficer, update updateFunc, agent agentFunc) *core.Status {
-	entries, status := update(nil, c.uri, c.origin)
+func processAssignments(c *caseOfficer, agent agentFunc, assign *assignment) *core.Status {
+	entries, status := assign.update(c.uri, c.origin)
 	if !status.OK() {
 		return status
 	}

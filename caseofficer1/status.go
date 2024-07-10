@@ -10,8 +10,8 @@ import (
 type insertFunc func(msg *messaging.Message) *core.Status
 
 // run - case officer status processing
-func runStatus(c *caseOfficer, log logFunc, insert insertFunc) {
-	if c == nil {
+func runStatus(c *caseOfficer, log logFunc, assign *assignment) {
+	if c == nil || log == nil || assign == nil {
 		return
 	}
 	for {
@@ -20,8 +20,8 @@ func runStatus(c *caseOfficer, log logFunc, insert insertFunc) {
 			if !open {
 				return
 			}
-			log(nil, c.uri, "processing status message")
-			status := insert(msg)
+			log(c.uri, "processing status message")
+			status := assign.addStatus(msg)
 			if !status.OK() && !status.NotFound() {
 				c.opsAgent.Handle(status, c.uri)
 			}
@@ -31,7 +31,7 @@ func runStatus(c *caseOfficer, log logFunc, insert insertFunc) {
 			}
 			switch msg1.Event() {
 			case messaging.ShutdownEvent:
-				log(nil, c.uri, messaging.ShutdownEvent)
+				log(c.uri, messaging.ShutdownEvent)
 				close(c.statusC)
 				close(c.statusCtrlC)
 				return
