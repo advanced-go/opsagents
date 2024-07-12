@@ -2,7 +2,6 @@ package logistics1
 
 import (
 	"fmt"
-	"github.com/advanced-go/opsagents/guidance"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"time"
@@ -35,11 +34,12 @@ func NewAgent(region string) messaging.OpsAgent {
 
 // newAgent - create a new logistics agent
 func newAgent(region string) *logistics {
+	guid := newGuidance()
 	c := new(logistics)
 	c.uri = AgentUri(region)
 	c.region = region
-	c.ticker = messaging.NewTicker(guidance.LogisticsInterval())
-	c.caseOfficerInterval = guidance.CaseOfficerInterval()
+	c.ticker = messaging.NewTicker(guid.logisticsInterval())
+	c.caseOfficerInterval = guid.caseOfficerInterval()
 	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.caseOfficers = messaging.NewExchange()
 	return c

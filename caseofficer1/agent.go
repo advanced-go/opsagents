@@ -70,7 +70,7 @@ func (c *caseOfficer) Uri() string {
 
 // Message - message the agent
 func (c *caseOfficer) Message(m *messaging.Message) {
-	messaging.Mux(m, c.ctrlC, nil, c.statusC)
+	messaging.Mux(m, c.ctrlC, c.dataC, c.statusC)
 }
 
 // Handle - error handler

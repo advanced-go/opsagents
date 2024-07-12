@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/advanced-go/operations v0.0.0-20240708225340-869a85faf998
-	github.com/advanced-go/stdlib v0.0.0-20240712130924-684b2d54e0fa
+	github.com/advanced-go/stdlib v0.0.0-20240712134629-81ff26405d5e
 )
 
 require (
