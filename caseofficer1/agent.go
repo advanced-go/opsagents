@@ -75,6 +75,7 @@ func (c *caseOfficer) Message(m *messaging.Message) {
 
 // Handle - error handler
 func (c *caseOfficer) Handle(status *core.Status, requestId string) *core.Status {
+	// TODO : do we need any processing specific to a case officer? If not then forward to handler
 	return c.handler.Handle(status, requestId)
 }
 
