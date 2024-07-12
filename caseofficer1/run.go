@@ -9,7 +9,7 @@ import (
 )
 
 type logFunc func(agentId string, content any) *core.Status
-type agentFunc func(traffic string, origin core.Origin, opsAgent messaging.OpsAgent) messaging.Agent
+type agentFunc func(traffic string, origin core.Origin, handler messaging.OpsAgent) messaging.Agent
 
 // run - case officer
 func run(c *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
@@ -19,16 +19,16 @@ func run(c *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
 	status := processAssignments(c, agent, assign)
 	log(c.uri, "process assignments : init")
 	if !status.OK() && !status.NotFound() {
-		c.opsAgent.Handle(status, c.uri)
+		c.handler.Handle(status, c.uri)
 	}
-	c.startTicker(0)
+	c.ticker.Start(0)
 	for {
 		select {
-		case <-c.ticker.C:
+		case <-c.ticker.C():
 			status = processAssignments(c, agent, assign)
 			log(c.uri, "process assignments : tick")
 			if !status.OK() && !status.NotFound() {
-				c.opsAgent.Handle(status, c.uri)
+				c.handler.Handle(status, c.uri)
 			}
 		case msg, open := <-c.ctrlC:
 			if !open {
@@ -37,7 +37,7 @@ func run(c *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				close(c.ctrlC)
-				c.stopTicker()
+				c.ticker.Stop()
 				log(c.uri, messaging.ShutdownEvent)
 				return
 			default:
@@ -47,11 +47,11 @@ func run(c *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
 	}
 }
 
-func newControllerAgent(traffic string, origin core.Origin, opsAgent messaging.OpsAgent) messaging.Agent {
+func newControllerAgent(traffic string, origin core.Origin, handler messaging.OpsAgent) messaging.Agent {
 	if traffic == access.IngressTraffic {
-		return ingress1.NewControllerAgent(origin, opsAgent)
+		return ingress1.NewControllerAgent(origin, handler)
 	}
-	return egress1.NewControllerAgent(origin, opsAgent)
+	return egress1.NewControllerAgent(origin, handler)
 }
 
 func processAssignments(c *caseOfficer, agent agentFunc, assign *assignment) *core.Status {
@@ -60,7 +60,7 @@ func processAssignments(c *caseOfficer, agent agentFunc, assign *assignment) *co
 		return status
 	}
 	for _, e := range entries {
-		err := c.controllers.Register(agent(c.traffic, e.Origin(), c.opsAgent))
+		err := c.controllers.Register(agent(c.traffic, e.Origin(), c.handler))
 		if err != nil {
 			return core.NewStatusError(core.StatusInvalidArgument, err)
 		}

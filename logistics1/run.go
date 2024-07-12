@@ -22,10 +22,10 @@ func run(l *logistics, log logFunc, agent agentFunc, ls *landscape) {
 	if !status.OK() && !status.NotFound() {
 		l.Handle(status, "")
 	}
-	l.startTicker(0)
+	l.ticker.Start(0)
 	for {
 		select {
-		case <-l.ticker.C:
+		case <-l.ticker.C():
 			// TODO : determine how to check for partition changes
 			log(l.uri, "process assignments : tick")
 		case msg, open := <-l.ctrlC:
@@ -35,7 +35,7 @@ func run(l *logistics, log logFunc, agent agentFunc, ls *landscape) {
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
 				close(l.ctrlC)
-				l.stopTicker()
+				l.ticker.Stop()
 				log(l.uri, messaging.ShutdownEvent)
 				return
 			default:

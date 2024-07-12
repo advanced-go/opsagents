@@ -17,7 +17,7 @@ type logistics struct {
 	uri                 string
 	region              string
 	interval            time.Duration
-	ticker              *time.Ticker
+	ticker              *messaging.Ticker
 	caseOfficerInterval time.Duration
 	ctrlC               chan *messaging.Message
 	caseOfficers        *messaging.Exchange
@@ -38,7 +38,7 @@ func newAgent(region string) *logistics {
 	c := new(logistics)
 	c.uri = AgentUri(region)
 	c.region = region
-	c.interval = guidance.LogisticsInterval()
+	c.ticker = messaging.NewTicker(guidance.LogisticsInterval())
 	c.caseOfficerInterval = guidance.CaseOfficerInterval()
 	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.caseOfficers = messaging.NewExchange()
@@ -94,6 +94,7 @@ func (l *logistics) Run() {
 	go run(l, activityLog, newCaseOfficer, newLandscape())
 }
 
+/*
 func (l *logistics) startTicker(interval time.Duration) {
 	if interval <= 0 {
 		interval = l.interval
@@ -109,3 +110,6 @@ func (l *logistics) startTicker(interval time.Duration) {
 func (l *logistics) stopTicker() {
 	l.ticker.Stop()
 }
+
+
+*/

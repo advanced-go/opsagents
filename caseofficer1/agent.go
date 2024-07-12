@@ -14,14 +14,15 @@ const (
 type caseOfficer struct {
 	running     bool
 	uri         string
-	interval    time.Duration
-	ticker      *time.Ticker
+	ticker      *messaging.Ticker
 	traffic     string
 	origin      core.Origin
 	ctrlC       chan *messaging.Message
 	statusCtrlC chan *messaging.Message
 	statusC     chan *messaging.Message
-	opsAgent    messaging.OpsAgent
+	dataCtrlC   chan *messaging.Message
+	dataC       chan *messaging.Message
+	handler     messaging.OpsAgent
 	controllers *messaging.Exchange
 	shutdown    func()
 }
@@ -34,22 +35,25 @@ func AgentUri(traffic string, origin core.Origin) string {
 }
 
 // NewAgent - create a new case officer agent
-func NewAgent(interval time.Duration, traffic string, origin core.Origin, opsAgent messaging.OpsAgent) messaging.OpsAgent {
-	return newAgent(interval, traffic, origin, opsAgent)
+func NewAgent(interval time.Duration, traffic string, origin core.Origin, handler messaging.OpsAgent) messaging.OpsAgent {
+	return newAgent(interval, traffic, origin, handler)
 }
 
 // newCAgent - create a new case officer agent
-func newAgent(interval time.Duration, traffic string, origin core.Origin, opsAgent messaging.OpsAgent) *caseOfficer {
+func newAgent(interval time.Duration, traffic string, origin core.Origin, handler messaging.OpsAgent) *caseOfficer {
 	c := new(caseOfficer)
 	c.uri = AgentUri(traffic, origin)
 	c.traffic = traffic
 	c.origin = origin
-	c.interval = interval
+	c.ticker = messaging.NewTicker(interval)
 
 	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.statusCtrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.statusC = make(chan *messaging.Message, 3*messaging.ChannelSize)
-	c.opsAgent = opsAgent
+	c.dataCtrlC = make(chan *messaging.Message, messaging.ChannelSize)
+	c.dataC = make(chan *messaging.Message, 3*messaging.ChannelSize)
+
+	c.handler = handler
 	c.controllers = messaging.NewExchange()
 	return c
 }
@@ -71,7 +75,7 @@ func (c *caseOfficer) Message(m *messaging.Message) {
 
 // Handle - error handler
 func (c *caseOfficer) Handle(status *core.Status, requestId string) *core.Status {
-	return c.opsAgent.Handle(status, requestId)
+	return c.handler.Handle(status, requestId)
 }
 
 // Shutdown - shutdown the agent
@@ -103,6 +107,7 @@ func (c *caseOfficer) Run() {
 	go run(c, activityLog, newControllerAgent, newAssignment())
 }
 
+/*
 func (c *caseOfficer) startTicker(interval time.Duration) {
 	if interval <= 0 {
 		interval = c.interval
@@ -118,3 +123,6 @@ func (c *caseOfficer) startTicker(interval time.Duration) {
 func (c *caseOfficer) stopTicker() {
 	c.ticker.Stop()
 }
+
+
+*/
