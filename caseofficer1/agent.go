@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	Class = "case-officer1"
+	Class           = "case-officer1"
+	defaultInterval = time.Second * 3
 )
 
 type caseOfficer struct {

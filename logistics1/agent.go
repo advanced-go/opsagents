@@ -2,6 +2,7 @@ package logistics1
 
 import (
 	"fmt"
+	"github.com/advanced-go/intelagents/guidance1"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"time"
@@ -20,6 +21,7 @@ type logistics struct {
 	caseOfficerInterval time.Duration
 	ctrlC               chan *messaging.Message
 	caseOfficers        *messaging.Exchange
+	scheduler           messaging.Agent
 	shutdown            func()
 }
 
@@ -42,6 +44,7 @@ func newAgent(region string) *logistics {
 	c.caseOfficerInterval = guid.caseOfficerInterval()
 	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.caseOfficers = messaging.NewExchange()
+	c.scheduler = guidance1.NewScheduleAgent(guid.scheduleInterval(), c)
 	return c
 }
 
