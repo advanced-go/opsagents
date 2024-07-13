@@ -19,6 +19,7 @@ type logistics struct {
 	interval            time.Duration
 	ticker              *messaging.Ticker
 	caseOfficerInterval time.Duration
+	policyInterval      time.Duration
 	ctrlC               chan *messaging.Message
 	caseOfficers        *messaging.Exchange
 	scheduler           messaging.Agent
@@ -42,6 +43,7 @@ func newAgent(region string) *logistics {
 	c.region = region
 	c.ticker = messaging.NewTicker(guid.logisticsInterval())
 	c.caseOfficerInterval = guid.caseOfficerInterval()
+	c.policyInterval = guid.policyInterval()
 	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.caseOfficers = messaging.NewExchange()
 	c.scheduler = guidance1.NewScheduleAgent(guid.scheduleInterval(), c)

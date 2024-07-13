@@ -4,6 +4,10 @@ github.com/advanced-go/intelagents v0.0.0-20240712124009-44a178785989 h1:srmk3k5
 github.com/advanced-go/intelagents v0.0.0-20240712124009-44a178785989/go.mod h1:jCBuyqxk9e9T9D5ARjkOTYSAFDD+AMZX9HWLQHZCmQE=
 github.com/advanced-go/intelagents v0.0.0-20240712143709-ed476aba5a21 h1:Clm7BhTvM1Y86Jg0+g3hVHq/VWYLnyzIw/0bBR7FFr0=
 github.com/advanced-go/intelagents v0.0.0-20240712143709-ed476aba5a21/go.mod h1:jCBuyqxk9e9T9D5ARjkOTYSAFDD+AMZX9HWLQHZCmQE=
+github.com/advanced-go/intelagents v0.0.0-20240712150258-c84489c38632 h1:jYVLreINvqcrC1I4y7wiT+6rbk+ti1hthmLuzA0+WJ4=
+github.com/advanced-go/intelagents v0.0.0-20240712150258-c84489c38632/go.mod h1:jCBuyqxk9e9T9D5ARjkOTYSAFDD+AMZX9HWLQHZCmQE=
+github.com/advanced-go/intelagents v0.0.0-20240712152658-7b8cce4ad5da h1:EFruxYtukXArmtxqIWlcrDB5gSy1p96LJO2GQtUMfBs=
+github.com/advanced-go/intelagents v0.0.0-20240712152658-7b8cce4ad5da/go.mod h1:jCBuyqxk9e9T9D5ARjkOTYSAFDD+AMZX9HWLQHZCmQE=
 github.com/advanced-go/operations v0.0.0-20240708225340-869a85faf998 h1:mPPaRBFW2bfFAQvSyqTI2DJwGa8njkiXclapT32jidc=
 github.com/advanced-go/operations v0.0.0-20240708225340-869a85faf998/go.mod h1:6rzX8YYXmogfDBLRTH0fTheEQeyZkIBkD9609KaWfeY=
 github.com/advanced-go/postgresql v0.0.0-20240616075129-fc362725c643 h1:p5bvmlOa9eoq/TMy4DD3HWTp0ZXD9PeIj6WzgrfmuqI=

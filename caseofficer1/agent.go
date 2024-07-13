@@ -2,14 +2,14 @@ package caseofficer1
 
 import (
 	"fmt"
+	"github.com/advanced-go/intelagents/guidance1"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"time"
 )
 
 const (
-	Class           = "case-officer1"
-	defaultInterval = time.Second * 3
+	Class = "case-officer1"
 )
 
 type caseOfficer struct {
@@ -25,6 +25,7 @@ type caseOfficer struct {
 	dataC       chan *messaging.Message
 	handler     messaging.OpsAgent
 	controllers *messaging.Exchange
+	policy      messaging.Agent
 	shutdown    func()
 }
 
@@ -54,6 +55,7 @@ func newAgent(interval time.Duration, traffic string, origin core.Origin, handle
 	c.dataCtrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.dataC = make(chan *messaging.Message, 3*messaging.ChannelSize)
 
+	c.policy = guidance1.NewPolicyAgent(newGuidance().policyInterval(), c)
 	c.handler = handler
 	c.controllers = messaging.NewExchange()
 	return c

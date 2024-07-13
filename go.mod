@@ -9,7 +9,7 @@ require (
 
 require (
 	github.com/advanced-go/agency v0.0.0-20240708141331-cd066e0b141d // indirect
-	github.com/advanced-go/intelagents v0.0.0-20240712143709-ed476aba5a21 // indirect
+	github.com/advanced-go/intelagents v0.0.0-20240712152658-7b8cce4ad5da // indirect
 	github.com/advanced-go/postgresql v0.0.0-20240616075129-fc362725c643 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
