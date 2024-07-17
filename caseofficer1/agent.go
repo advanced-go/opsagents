@@ -62,53 +62,53 @@ func newAgent(interval time.Duration, traffic string, origin core.Origin, handle
 }
 
 // String - identity
-func (c *caseOfficer) String() string {
-	return c.uri
+func (a *caseOfficer) String() string {
+	return a.uri
 }
 
 // Uri - agent identifier
-func (c *caseOfficer) Uri() string {
-	return c.uri
+func (a *caseOfficer) Uri() string {
+	return a.uri
 }
 
 // Message - message the agent
-func (c *caseOfficer) Message(m *messaging.Message) {
-	messaging.Mux(m, c.ctrlC, c.dataC, c.statusC)
+func (a *caseOfficer) Message(m *messaging.Message) {
+	messaging.Mux(m, a.ctrlC, a.dataC, a.statusC)
 }
 
 // Handle - error handler
-func (c *caseOfficer) Handle(status *core.Status, requestId string) *core.Status {
+func (a *caseOfficer) Handle(status *core.Status, requestId string) *core.Status {
 	// TODO : do we need any processing specific to a case officer? If not then forward to handler
-	return c.handler.Handle(status, requestId)
+	return a.handler.Handle(status, requestId)
 }
 
 // Shutdown - shutdown the agent
-func (c *caseOfficer) Shutdown() {
-	if !c.running {
+func (a *caseOfficer) Shutdown() {
+	if !a.running {
 		return
 	}
-	c.running = false
-	if c.shutdown != nil {
-		c.shutdown()
+	a.running = false
+	if a.shutdown != nil {
+		a.shutdown()
 	}
-	msg := messaging.NewControlMessage(c.uri, c.uri, messaging.ShutdownEvent)
-	if c.ctrlC != nil {
-		c.ctrlC <- msg
+	msg := messaging.NewControlMessage(a.uri, a.uri, messaging.ShutdownEvent)
+	if a.ctrlC != nil {
+		a.ctrlC <- msg
 	}
-	if c.statusCtrlC != nil {
-		c.statusCtrlC <- msg
+	if a.statusCtrlC != nil {
+		a.statusCtrlC <- msg
 	}
-	c.controllers.Broadcast(msg)
+	a.controllers.Broadcast(msg)
 }
 
 // Run - run the agent
-func (c *caseOfficer) Run() {
-	if c.running {
+func (a *caseOfficer) Run() {
+	if a.running {
 		return
 	}
-	c.running = true
-	go runStatus(c, activityLog, newAssignment())
-	go run(c, activityLog, newControllerAgent, newAssignment())
+	a.running = true
+	go runStatus(a, activityLog, newAssignment())
+	go run(a, activityLog, newControllerAgent, newAssignment())
 }
 
 /*

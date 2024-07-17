@@ -12,33 +12,33 @@ type logFunc func(agentId string, content any) *core.Status
 type agentFunc func(traffic string, origin core.Origin, handler messaging.OpsAgent) messaging.Agent
 
 // run - case officer
-func run(c *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
-	if c == nil || log == nil || agent == nil || assign == nil {
+func run(a *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
+	if a == nil || log == nil || agent == nil || assign == nil {
 		return
 	}
-	status := processAssignments(c, agent, assign)
-	log(c.uri, "process assignments : init")
+	status := processAssignments(a, agent, assign)
+	log(a.uri, "process assignments : init")
 	if !status.OK() && !status.NotFound() {
-		c.handler.Handle(status, c.uri)
+		a.handler.Handle(status, a.uri)
 	}
-	c.ticker.Start(0)
+	a.ticker.Start(0)
 	for {
 		select {
-		case <-c.ticker.C():
-			status = processAssignments(c, agent, assign)
-			log(c.uri, "process assignments : tick")
+		case <-a.ticker.C():
+			status = processAssignments(a, agent, assign)
+			log(a.uri, "process assignments : tick")
 			if !status.OK() && !status.NotFound() {
-				c.handler.Handle(status, c.uri)
+				a.handler.Handle(status, a.uri)
 			}
-		case msg, open := <-c.ctrlC:
+		case msg, open := <-a.ctrlC:
 			if !open {
 				return
 			}
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
-				close(c.ctrlC)
-				c.ticker.Stop()
-				log(c.uri, messaging.ShutdownEvent)
+				close(a.ctrlC)
+				a.ticker.Stop()
+				log(a.uri, messaging.ShutdownEvent)
 				return
 			default:
 			}
@@ -54,13 +54,13 @@ func newControllerAgent(traffic string, origin core.Origin, handler messaging.Op
 	return egress1.NewControllerAgent(origin, handler)
 }
 
-func processAssignments(c *caseOfficer, agent agentFunc, assign *assignment) *core.Status {
-	entries, status := assign.update(c.uri, c.origin)
+func processAssignments(a *caseOfficer, agent agentFunc, assign *assignment) *core.Status {
+	entries, status := assign.update(a.uri, a.origin)
 	if !status.OK() {
 		return status
 	}
 	for _, e := range entries {
-		err := c.controllers.Register(agent(c.traffic, e.Origin(), c.handler))
+		err := a.controllers.Register(agent(a.traffic, e.Origin(), a.handler))
 		if err != nil {
 			return core.NewStatusError(core.StatusInvalidArgument, err)
 		}

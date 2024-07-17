@@ -43,7 +43,7 @@ func newAgent(region string) *logistics {
 	c.region = region
 	c.ticker = messaging.NewTicker(guid.logisticsInterval())
 	c.caseOfficerInterval = guid.caseOfficerInterval()
-	c.policyInterval = guid.policyInterval()
+	//c.policyInterval = guid.policyInterval()
 	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.caseOfficers = messaging.NewExchange()
 	c.scheduler = guidance1.NewScheduleAgent(guid.scheduleInterval(), c)
