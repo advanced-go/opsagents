@@ -12,7 +12,7 @@ type logFunc func(agentId string, content any) *core.Status
 type agentFunc func(traffic string, origin core.Origin, handler messaging.OpsAgent) messaging.Agent
 
 // run - case officer
-func run(a *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
+func runCaseOfficer(a *caseOfficer, log logFunc, agent agentFunc, assign *assignment) {
 	if a == nil || log == nil || agent == nil || assign == nil {
 		return
 	}

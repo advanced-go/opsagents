@@ -13,7 +13,7 @@ type agentFunc func(interval time.Duration, traffic string, origin core.Origin, 
 type queryFunc func(region string) ([]landscape1.Entry, *core.Status)
 
 // run - operations logistics
-func run(l *logistics, log logFunc, agent agentFunc, ls *landscape) {
+func runLogistics(l *logistics, log logFunc, agent agentFunc, ls *landscape) {
 	if l == nil || log == nil || agent == nil || ls == nil {
 		return
 	}

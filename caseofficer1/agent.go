@@ -108,25 +108,5 @@ func (a *caseOfficer) Run() {
 	}
 	a.running = true
 	go runStatus(a, activityLog, newAssignment())
-	go run(a, activityLog, newControllerAgent, newAssignment())
+	go runCaseOfficer(a, activityLog, newControllerAgent, newAssignment())
 }
-
-/*
-func (c *caseOfficer) startTicker(interval time.Duration) {
-	if interval <= 0 {
-		interval = c.interval
-	} else {
-		c.interval = interval
-	}
-	if c.ticker != nil {
-		c.ticker.Stop()
-	}
-	c.ticker = time.NewTicker(interval)
-}
-
-func (c *caseOfficer) stopTicker() {
-	c.ticker.Stop()
-}
-
-
-*/

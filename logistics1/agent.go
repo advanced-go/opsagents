@@ -96,25 +96,5 @@ func (l *logistics) Run() {
 	}
 	l.running = true
 
-	go run(l, activityLog, newCaseOfficer, newLandscape())
+	go runLogistics(l, activityLog, newCaseOfficer, newLandscape())
 }
-
-/*
-func (l *logistics) startTicker(interval time.Duration) {
-	if interval <= 0 {
-		interval = l.interval
-	} else {
-		l.interval = interval
-	}
-	if l.ticker != nil {
-		l.ticker.Stop()
-	}
-	l.ticker = time.NewTicker(interval)
-}
-
-func (l *logistics) stopTicker() {
-	l.ticker.Stop()
-}
-
-
-*/
