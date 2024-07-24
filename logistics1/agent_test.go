@@ -21,6 +21,13 @@ func (t *testAgent) Handle(status *core.Status, _ string) *core.Status {
 func (t *testAgent) Run()      {}
 func (t *testAgent) Shutdown() {}
 
+func newTestOperations() *operations {
+	return &operations{
+		log: func(handler messaging.OpsAgent, content any) {
+			fmt.Printf("test: activity1.Log() -> %v : %v : %v\n", fmt2.FmtRFC3339Millis(time.Now().UTC()), handler.Uri(), content)
+		},
+	}
+}
 func testLog(agentId string, content any) *core.Status {
 	fmt.Printf("test: activity1.Log() -> %v : %v : %v\n", fmt2.FmtRFC3339Millis(time.Now().UTC()), agentId, content)
 	return core.StatusOK()

@@ -2,41 +2,31 @@ package logistics1
 
 import (
 	"github.com/advanced-go/operations/caseofficer1"
-	"github.com/advanced-go/operations/landscape1"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
-	"time"
 )
 
-type logFunc func(agentId string, content any) *core.Status
-type agentFunc func(interval time.Duration, traffic string, origin core.Origin, handler messaging.Agent) messaging.Agent
-type queryFunc func(region string) ([]landscape1.Entry, *core.Status)
-
 // run - operations logistics
-func runLogistics(l *logistics, log logFunc, agent agentFunc, ls *landscape) {
-	if l == nil || log == nil || agent == nil || ls == nil {
+func run(l *logistics, ls *landscape, ops *operations) {
+	if l == nil || ls == nil || ops == nil {
 		return
 	}
-	status := processAssignments(l, agent, ls)
-	log(l.uri, "process assignments : init")
-	if !status.OK() && !status.NotFound() {
-		l.Handle(status, "")
-	}
+	processAssignments(l, ls)
+	ops.log(l, "process assignments : init")
 	l.ticker.Start(0)
 	for {
 		select {
 		case <-l.ticker.C():
 			// TODO : determine how to check for partition changes
-			log(l.uri, "process assignments : tick")
+			ops.log(l, "process assignments : tick")
 		case msg, open := <-l.ctrlC:
 			if !open {
 				return
 			}
 			switch msg.Event() {
 			case messaging.ShutdownEvent:
-				close(l.ctrlC)
-				l.ticker.Stop()
-				log(l.uri, messaging.ShutdownEvent)
+				l.shutdown()
+				ops.log(l, messaging.ShutdownEvent)
 				return
 			default:
 			}
@@ -45,20 +35,19 @@ func runLogistics(l *logistics, log logFunc, agent agentFunc, ls *landscape) {
 	}
 }
 
-func newCaseOfficer(interval time.Duration, traffic string, origin core.Origin, handler messaging.Agent) messaging.Agent {
-	return caseofficer1.NewAgent(interval, traffic, origin, handler)
-}
-
-func processAssignments(l *logistics, newAgent agentFunc, ls *landscape) *core.Status {
+func processAssignments(l *logistics, ls *landscape) *core.Status {
 	entries, status := ls.query(l.region)
 	if !status.OK() {
+		l.Handle(status, "")
 		return status
 	}
 	for _, e1 := range entries {
-		err := l.caseOfficers.Register(newAgent(l.caseOfficerInterval, e1.Traffic, e1.Origin(), l))
+		err := l.caseOfficers.Register(caseofficer1.NewAgent(l.caseOfficerInterval, e1.Traffic, e1.Origin(), l))
 		if err != nil {
-			return core.NewStatusError(core.StatusInvalidArgument, err)
+			status = core.NewStatusError(core.StatusInvalidArgument, err)
+			l.Handle(status, "")
+			return status
 		}
 	}
-	return status
+	return core.StatusOK()
 }

@@ -10,7 +10,7 @@ func ExampleRun() {
 	msg := messaging.NewControlMessage("to", "from", messaging.ShutdownEvent)
 
 	c := newAgent("west")
-	go run(c, testLog, newCaseOfficer, newLandscape())
+	go runLogistics(c, newLandscape(), newTestOperations())
 	time.Sleep(time.Second * 3)
 
 	c.ctrlC <- msg

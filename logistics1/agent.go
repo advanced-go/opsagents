@@ -23,7 +23,7 @@ type logistics struct {
 	ctrlC               chan *messaging.Message
 	caseOfficers        *messaging.Exchange
 	scheduler           messaging.Agent
-	shutdown            func()
+	shutdownFunc        func()
 }
 
 func AgentUri(region string) string {
@@ -66,7 +66,7 @@ func (l *logistics) Message(m *messaging.Message) {
 }
 
 // Handle - error handler
-func (c *logistics) Handle(status *core.Status, requestId string) *core.Status {
+func (l *logistics) Handle(status *core.Status, requestId string) *core.Status {
 	// TODO : how to handle an error
 	fmt.Printf("test: opsAgent.Handle() -> [status:%v]\n", status)
 	status.Handled = true
@@ -79,14 +79,20 @@ func (l *logistics) Shutdown() {
 		return
 	}
 	l.running = false
-	if l.shutdown != nil {
-		l.shutdown()
+	if l.shutdownFunc != nil {
+		l.shutdownFunc()
 	}
 	msg := messaging.NewControlMessage(l.uri, l.uri, messaging.ShutdownEvent)
 	if l.ctrlC != nil {
 		l.ctrlC <- msg
 	}
 	l.caseOfficers.Broadcast(msg)
+}
+
+// Close resources
+func (l *logistics) shutdown() {
+	close(l.ctrlC)
+	l.ticker.Stop()
 }
 
 // Run - run the agent
@@ -96,5 +102,5 @@ func (l *logistics) Run() {
 	}
 	l.running = true
 
-	go runLogistics(l, activityLog, newCaseOfficer, newLandscape())
+	go runLogistics(l, newLandscape(), newOperations())
 }
