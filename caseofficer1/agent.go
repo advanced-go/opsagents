@@ -2,7 +2,6 @@ package caseofficer1
 
 import (
 	"fmt"
-	"github.com/advanced-go/intelagents/guidance1"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"time"
@@ -55,58 +54,64 @@ func newAgent(interval time.Duration, traffic string, origin core.Origin, handle
 	c.dataCtrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.dataC = make(chan *messaging.Message, 3*messaging.ChannelSize)
 
-	c.policy = guidance1.NewPolicyAgent(newGuidance().policyInterval(), c)
+	//c.policy = guidance1.NewPolicyAgent(newGuidance().policyInterval(), c)
 	c.handler = handler
 	c.controllers = messaging.NewExchange()
 	return c
 }
 
 // String - identity
-func (a *caseOfficer) String() string {
-	return a.uri
+func (c *caseOfficer) String() string {
+	return c.uri
 }
 
 // Uri - agent identifier
-func (a *caseOfficer) Uri() string {
-	return a.uri
+func (c *caseOfficer) Uri() string {
+	return c.uri
 }
 
 // Message - message the agent
-func (a *caseOfficer) Message(m *messaging.Message) {
-	messaging.Mux(m, a.ctrlC, a.dataC, a.statusC)
+func (c *caseOfficer) Message(m *messaging.Message) {
+	messaging.Mux(m, c.ctrlC, c.dataC, c.statusC)
 }
 
 // Handle - error handler
-func (a *caseOfficer) Handle(status *core.Status, requestId string) *core.Status {
+func (c *caseOfficer) Handle(status *core.Status, requestId string) *core.Status {
 	// TODO : do we need any processing specific to a case officer? If not then forward to handler
-	return a.handler.Handle(status, requestId)
+	return c.handler.Handle(status, requestId)
+}
+
+// AddActivity - add activity
+func (c *caseOfficer) AddActivity(agentId string, content any) {
+	// TODO : Any operations specific processing ??  If not then forward to handler
+	//return a.handler.Handle(status, requestId)
 }
 
 // Shutdown - shutdown the agent
-func (a *caseOfficer) Shutdown() {
-	if !a.running {
+func (c *caseOfficer) Shutdown() {
+	if !c.running {
 		return
 	}
-	a.running = false
-	if a.shutdown != nil {
-		a.shutdown()
+	c.running = false
+	if c.shutdown != nil {
+		c.shutdown()
 	}
-	msg := messaging.NewControlMessage(a.uri, a.uri, messaging.ShutdownEvent)
-	if a.ctrlC != nil {
-		a.ctrlC <- msg
+	msg := messaging.NewControlMessage(c.uri, c.uri, messaging.ShutdownEvent)
+	if c.ctrlC != nil {
+		c.ctrlC <- msg
 	}
-	if a.statusCtrlC != nil {
-		a.statusCtrlC <- msg
+	if c.statusCtrlC != nil {
+		c.statusCtrlC <- msg
 	}
-	a.controllers.Broadcast(msg)
+	c.controllers.Broadcast(msg)
 }
 
 // Run - run the agent
-func (a *caseOfficer) Run() {
-	if a.running {
+func (c *caseOfficer) Run() {
+	if c.running {
 		return
 	}
-	a.running = true
-	go runStatus(a, activityLog, newAssignment())
-	go runCaseOfficer(a, activityLog, newControllerAgent, newAssignment())
+	c.running = true
+	go runStatus(c, activityLog, newAssignment())
+	go runCaseOfficer(c, activityLog, newControllerAgent, newAssignment())
 }

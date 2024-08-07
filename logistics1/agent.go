@@ -2,7 +2,6 @@ package logistics1
 
 import (
 	"fmt"
-	"github.com/advanced-go/intelagents/guidance1"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"
 	"time"
@@ -46,7 +45,7 @@ func newAgent(region string) *logistics {
 	//c.policyInterval = guid.policyInterval()
 	c.ctrlC = make(chan *messaging.Message, messaging.ChannelSize)
 	c.caseOfficers = messaging.NewExchange()
-	c.scheduler = guidance1.NewScheduleAgent(guid.scheduleInterval(), c)
+	//c.scheduler = guidance1.NewScheduleAgent(guid.scheduleInterval(), c)
 	return c
 }
 
@@ -71,6 +70,12 @@ func (l *logistics) Handle(status *core.Status, requestId string) *core.Status {
 	fmt.Printf("test: opsAgent.Handle() -> [status:%v]\n", status)
 	status.Handled = true
 	return status
+}
+
+// AddActivity - add activity
+func (l *logistics) AddActivity(agentId string, content any) {
+	// TODO : Any operations specific processing ??  If not then forward to handler
+	//return a.handler.Handle(status, requestId)
 }
 
 // Shutdown - shutdown the agent

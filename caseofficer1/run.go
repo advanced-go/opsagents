@@ -1,8 +1,8 @@
 package caseofficer1
 
 import (
-	"github.com/advanced-go/agency/egress1"
-	"github.com/advanced-go/agency/ingress1"
+	"github.com/advanced-go/intelagents/egress1"
+	"github.com/advanced-go/intelagents/ingress1"
 	"github.com/advanced-go/stdlib/access"
 	"github.com/advanced-go/stdlib/core"
 	"github.com/advanced-go/stdlib/messaging"

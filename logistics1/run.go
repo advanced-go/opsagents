@@ -7,7 +7,7 @@ import (
 )
 
 // run - operations logistics
-func run(l *logistics, ls *landscape, ops *operations) {
+func runLogistics(l *logistics, ls *landscape, ops *operations) {
 	if l == nil || ls == nil || ops == nil {
 		return
 	}
