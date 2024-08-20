@@ -49,9 +49,9 @@ func runCaseOfficer(a *caseOfficer, log logFunc, agent agentFunc, assign *assign
 
 func newControllerAgent(traffic string, origin core.Origin, handler messaging.OpsAgent) messaging.Agent {
 	if traffic == access.IngressTraffic {
-		return ingress1.NewControllerAgent(origin, handler)
+		return ingress1.NewFieldOperative(origin, nil, handler)
 	}
-	return egress1.NewControllerAgent(origin, handler)
+	return egress1.NewLeadAgent(origin, handler)
 }
 
 func processAssignments(a *caseOfficer, agent agentFunc, assign *assignment) *core.Status {

@@ -3,15 +3,15 @@ module github.com/advanced-go/opsagents
 go 1.21.4
 
 require (
-	github.com/advanced-go/intelagents v0.0.0-20240806163240-5d63450c1d17
+	github.com/advanced-go/intelagents v0.0.0-20240819233235-bf7d2c53c0ca
 	github.com/advanced-go/operations v0.0.0-20240708225340-869a85faf998
-	github.com/advanced-go/stdlib v0.0.0-20240731141410-549a004bb5f4
+	github.com/advanced-go/stdlib v0.0.0-20240811140104-7a5e56258209
 )
 
 require (
 	github.com/advanced-go/agency v0.0.0-20240708141331-cd066e0b141d // indirect
-	github.com/advanced-go/experience v0.0.0-20240806150100-3ff02bdb54d9 // indirect
-	github.com/advanced-go/guidance v0.0.0-20240726160118-299946960c87 // indirect
+	github.com/advanced-go/experience v0.0.0-20240811123632-6ab820068151 // indirect
+	github.com/advanced-go/guidance v0.0.0-20240817123929-7fcc027f29f4 // indirect
 	github.com/advanced-go/observation v0.0.0-20240731141632-364bb4f7a108 // indirect
 	github.com/advanced-go/postgresql v0.0.0-20240720114046-6e895f523ca7 // indirect
 	github.com/google/uuid v1.6.0 // indirect
